@@ -2,14 +2,16 @@
 import './App.css';
 
 import React, { Component } from 'react'
+import NavBar from './components/NavBar';
+import News from './components/News';
 
 export default class App extends Component {
-  // Define the variable as a class property
- a = "Mandhoj";
+
   render() {
     return (
       <div>
-        Hello ! {this.a} Welcome to my first class based component app.
+        <NavBar/>
+        <News/>
       </div>
     )
   }
