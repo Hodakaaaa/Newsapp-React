@@ -111,23 +111,22 @@ export default class News extends Component {
         super();
         console.log("Hello I am a constructor from news component");
         this.state = {
-            articles: this.articles.filter(article => article.urlToImage) // Remove articles with null urlToImage
+            articles: this.articles,
+            loading: false
         };
     }
-    render() {
+    render() 
+    {
             return (
               <div className='container my-3'>
                 <h2>NewsMonkey-Top Headline</h2>
                 <div className='row'>
-                    <div className='col-md-4'>
-                        <NewsItem title="Sport" description="damn" imageUrl="https://a4.espncdn.com/combiner/i?img=%2Fi%2Fcricket%2Fcricinfo%2F1099495_800x450.jpg"/>
+                {this.state.articles.map((element)=>{
+                    return <div className='col-md-4'key={element.url}>
+                    <NewsItem  title={element.title.slice(0, 45)} description={element.description.slice(0, 88)} imageUrl={element.urlToImage} newsUrl={element.url}/>
                     </div>
-                    <div className='col-md-4'>
-                        <NewsItem title="Sport" description="damn"/>
-                    </div>
-                    <div className='col-md-4'>
-                        <NewsItem title="Sport" description="damn"/>
-                    </div>
+                })}
+                    
                 </div>
               </div>
             )
