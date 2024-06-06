@@ -17,6 +17,7 @@ export default class News extends Component {
     pageSize: PropTypes.number,
     category: PropTypes.string,
     badgeColor: PropTypes.string,
+    setProgress: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -49,17 +50,20 @@ export default class News extends Component {
   }
 
   async updateNews() {
+    this.props.setProgress(10);
     const { country, category, pageSize } = this.props;
     const { page } = this.state;
     const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=19909c7d810d435eb7fabffb1832fc9b&page=${page}&pageSize=${pageSize}`;
     this.setState({ loading: true });
     let data = await fetch(url);
+    this.props.setProgress(50);
     let parsedData = await data.json();
     this.setState({
       articles: parsedData.articles,
       totalResults: parsedData.totalResults,
       loading: false,
     });
+    this.props.setProgress(100);
   }
 
   fetchMoreData = async () => {
@@ -88,7 +92,6 @@ export default class News extends Component {
     return (
       <div className='container my-3'>
         <h1 className="text-center" style={{ margin: '35px 0px' }}>NewsMonkey - Top Headlines</h1>
-        {this.state.loading && <Spinner />}
         <InfiniteScroll
           dataLength={this.state.articles.length}
           next={this.fetchMoreData}
@@ -96,7 +99,7 @@ export default class News extends Component {
           loader={<Spinner />}
         >
           <div className='row'>
-            {!this.state.loading && this.state.articles.map((element) => {
+            {this.state.articles.map((element) => {
               return (
                 <div className='col-md-4' key={element.url}>
                   <NewsItem
@@ -114,7 +117,6 @@ export default class News extends Component {
             })}
           </div>
         </InfiniteScroll>
-       
       </div>
     );
   }

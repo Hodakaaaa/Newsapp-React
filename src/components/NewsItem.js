@@ -45,9 +45,15 @@ export default class NewsItem extends Component {
     return (
       <div className='my-3'>
         <div className="card">
-          <span className={`position-absolute top-0 start-100 translate-middle badge rounded-pill ${badgeColor}`} style={{ left: '90%', zIndex: '1' }}>
-            {source}
-          </span>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            position: 'absolute',
+            right: '0'
+
+          }}>
+            <span className={`badge rounded-pill bg-danger ${badgeColor}`} >{source}</span>
+          </div>
           <img src={!imageUrl ? "https://ambcrypto.com/wp-content/uploads/2024/06/eth-1536x878.png" : imageUrl} className="card-img-top" alt="..." />
           <div className="card-body">
             <h5 className="card-title">{title}</h5>
