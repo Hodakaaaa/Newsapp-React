@@ -4,28 +4,23 @@ import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const News = (props) => {
+const News = ({
+  country = 'us',
+  pageSize = 6,
+  category = 'general',
+  badgeColor = 'bg-primary',
+  setProgress,
+  apikey
+}) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
 
-  const { country, category, pageSize, badgeColor, setProgress, apikey } = props;
-
-  useEffect(() => {
-    updateNews();
-    updateTitle();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
-
-  const updateTitle = () => {
-    document.title = `NewsMonkey | ${category.charAt(0).toUpperCase() + category.slice(1)}`;
-  };
-
   const updateNews = async () => {
     setProgress(10);
-    setLoading(true);
     const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apikey}&page=${page}&pageSize=${pageSize}`;
+    setLoading(true);
     let data = await fetch(url);
     setProgress(50);
     let parsedData = await data.json();
@@ -35,19 +30,24 @@ const News = (props) => {
     setProgress(100);
   };
 
+  useEffect(() => {
+    updateNews();
+    document.title = `NewsMonkey | ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+    // eslint-disable-next-line
+  }, [category]);
+
   const fetchMoreData = async () => {
-    const nextPage = page + 1;
-    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apikey}&page=${nextPage}&pageSize=${pageSize}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apikey}&page=${page + 1}&pageSize=${pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
     setArticles(articles.concat(parsedData.articles));
     setTotalResults(parsedData.totalResults);
-    setPage(nextPage);
+    setPage(page + 1);
   };
 
   return (
     <div className='container my-3'>
-      <h1 className="text-center" style={{ margin: '35px 0px' }}>NewsMonkey - Top Headlines</h1>
+      <h1 className="text-center" style={{ margin: '35px 0px', marginTop: '90px' }}>NewsMonkey - Top Headlines</h1>
       {loading && <Spinner />}
       <InfiniteScroll
         dataLength={articles.length}
@@ -56,31 +56,26 @@ const News = (props) => {
         loader={<Spinner />}
       >
         <div className='row'>
-          {articles.map((element) => (
-            <div className='col-md-4' key={element.url}>
-              <NewsItem
-                title={element.title ? element.title : ""}
-                description={element.description ? element.description : ""}
-                imageUrl={element.urlToImage}
-                newsUrl={element.url}
-                author={element.author}
-                date={element.publishedAt}
-                source={element.source.name}
-                badgeColor={badgeColor}
-              />
-            </div>
-          ))}
+          {articles.map((element) => {
+            return (
+              <div className='col-md-4' key={element.url}>
+                <NewsItem
+                  title={element.title ? element.title : ""}
+                  description={element.description ? element.description : ""}
+                  imageUrl={element.urlToImage}
+                  newsUrl={element.url}
+                  author={element.author}
+                  date={element.publishedAt}
+                  source={element.source.name}
+                  badgeColor={badgeColor}
+                />
+              </div>
+            );
+          })}
         </div>
       </InfiniteScroll>
     </div>
   );
-};
-
-News.defaultProps = {
-  country: 'us',
-  pageSize: 6,
-  category: 'general',
-  badgeColor: 'bg-primary',
 };
 
 News.propTypes = {
@@ -89,7 +84,7 @@ News.propTypes = {
   category: PropTypes.string,
   badgeColor: PropTypes.string,
   setProgress: PropTypes.func.isRequired,
-  apikey: PropTypes.string.isRequired,
+  apikey: PropTypes.string.isRequired
 };
 
 export default News;
